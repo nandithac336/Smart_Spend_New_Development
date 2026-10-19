@@ -68,6 +68,17 @@ Intelligence features	Planned
 PWA and offline sync	Planned
 Deployment	Planned
 
+
+Area	New status
+Project setup	Done
+Auth (register, login, refresh)	Done, verified in Postman
+Auth (password reset)	Planned
+Wallets and transfers	Done, verified in Postman
+Transactions CRUD, trash, undo	Done, verified in Postman
+Categories	Done, verified in Postman
+Dashboard	Done, verified in Postman
+Only use the verified status for features whose tests actually passed.
+
 5. Database design (MongoDB)
 
 All collections include createdAt and updatedAt. All user-owned collections include userId (indexed).
@@ -389,6 +400,9 @@ Build the frontend auth screens and protected routes, then connect them to the l
 Build the dashboard from real data, never mock data.
 
 Lesson to apply from day one: connect each screen to the live API as soon as its endpoint exists, and verify it in a browser. Do not let mock data stay in the frontend after the backend is ready.
+
+
+Find the backend steps currently marked as upcoming. Change the completed backend steps to Done, including setup, authentication, wallets, transactions, categories, and dashboard, as applicable.
 
 16. Final note
 
