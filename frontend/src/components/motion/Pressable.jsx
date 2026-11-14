@@ -5,7 +5,7 @@ import { useMotionDisabled } from '@/hooks/useMotionDisabled.js'
 function Pressable({ children, className, ...props }) {
   const motionDisabled = useMotionDisabled()
 
-  if (motionDisabled) return <div className={className}>{children}</div>
+  if (motionDisabled) return <div className={className} {...props}>{children}</div>
 
   return (
     <m.div

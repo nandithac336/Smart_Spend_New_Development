@@ -1,23 +1,25 @@
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Eye, EyeOff } from 'lucide-react'
+import { Check, Eye, EyeOff, LockKeyhole, Mail } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { loginSchema } from '@/lib/authSchemas.js'
 import { getErrorMessage, getFieldErrors } from '@/lib/errors.js'
 import { useAuth } from '@/hooks/useAuth.js'
-import GlassCard from '@/components/common/GlassCard.jsx'
+import AuthInput from '@/components/common/AuthInput.jsx'
+import AuthLayout from '@/components/layout/AuthLayout.jsx'
 import Loader from '@/components/common/Loader.jsx'
-import { Button } from '@/components/ui/button.jsx'
-import { Input } from '@/components/ui/input.jsx'
-import { Label } from '@/components/ui/label.jsx'
+import GlowButton from '@/components/common/GlowButton.jsx'
+import { useMotionDisabled } from '@/hooks/useMotionDisabled.js'
+import { useDelayedAuthCommit } from '@/hooks/useDelayedAuthCommit.js'
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [submitError, setSubmitError] = useState('')
+  const [success, setSuccess] = useState(false)
+  const [failedAttempt, setFailedAttempt] = useState(0)
   const { login } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const delayAuthCommit = useDelayedAuthCommit(useMotionDisabled())
   const {
     register,
     handleSubmit,
@@ -28,15 +30,11 @@ function Login() {
   async function onSubmit(credentials) {
     setSubmitError('')
     try {
-      await login(credentials)
-      const destination = location.state?.from
-      navigate(
-        destination
-          ? `${destination.pathname}${destination.search ?? ''}${destination.hash ?? ''}`
-          : '/dashboard',
-        { replace: true },
-      )
+      const session = await login(credentials, { hold: true })
+      setSuccess(true)
+      await delayAuthCommit(session.commit)
     } catch (error) {
+      setFailedAttempt((attempt) => attempt + 1)
       const fieldErrors = getFieldErrors(error)
       Object.entries(fieldErrors).forEach(([field, message]) => {
         if (field === 'email' || field === 'password') {
@@ -49,57 +47,59 @@ function Login() {
     }
   }
 
+  function submitForm(event) {
+    return handleSubmit(onSubmit)(event)
+  }
+
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-10">
-      <GlassCard className="w-full max-w-md p-6 sm:p-8" variant="strong">
-        <Link className="text-sm font-semibold text-primary" to="/">Smart Spend</Link>
-        <h1 className="mt-5 text-2xl font-bold">Welcome back</h1>
+    <AuthLayout failedAttempt={failedAttempt}>
+        <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
         <p className="mt-1 text-sm text-muted-foreground">Log in to continue to your account.</p>
 
         {submitError && (
-          <div className="mt-5 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive" role="alert">
+          <div className="mt-5 rounded-xl border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive" role="alert">
             {submitError}
           </div>
         )}
 
-        <form className="mt-6 space-y-5" noValidate onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input autoComplete="email" id="email" type="email" {...register('email')} aria-invalid={Boolean(errors.email)} />
-            {errors.email && <p className="text-sm text-destructive" role="alert">{errors.email.message}</p>}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <div className="relative">
-              <Input
-                autoComplete="current-password"
-                className="pr-11"
-                id="password"
-                type={showPassword ? 'text' : 'password'}
-                {...register('password')}
-                aria-invalid={Boolean(errors.password)}
-              />
+        <form className="mt-6 space-y-5" noValidate onSubmit={submitForm}>
+          <AuthInput
+            autoComplete="email"
+            error={errors.email?.message}
+            icon={Mail}
+            id="email"
+            label="Email"
+            type="email"
+            {...register('email')}
+          />
+          <AuthInput
+            autoComplete="current-password"
+            error={errors.password?.message}
+            icon={LockKeyhole}
+            id="password"
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            trailing={
               <button
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute inset-y-0 right-2 inline-flex items-center text-muted-foreground"
+                className="absolute inset-y-0 right-3 inline-flex items-center text-muted-foreground transition-colors hover:text-foreground"
                 onClick={() => setShowPassword((visible) => !visible)}
                 type="button"
               >
                 {showPassword ? <EyeOff aria-hidden="true" className="size-4" /> : <Eye aria-hidden="true" className="size-4" />}
               </button>
-            </div>
-            {errors.password && <p className="text-sm text-destructive" role="alert">{errors.password.message}</p>}
-          </div>
-          <Button className="w-full" disabled={isSubmitting} type="submit">
-            {isSubmitting && <Loader className="mr-2" />}
-            {isSubmitting ? 'Logging in…' : 'Log in'}
-          </Button>
+            }
+            {...register('password')}
+          />
+          <GlowButton className="auth-submit flex h-12 w-full items-center justify-center gap-2 rounded-xl" disabled={isSubmitting} type="submit">
+            {success ? <Check aria-hidden="true" className="size-5" /> : isSubmitting ? <Loader label="Logging in" /> : null}
+            {success ? 'Signed in' : isSubmitting ? 'Logging in…' : 'Log in'}
+          </GlowButton>
         </form>
         <p className="mt-6 text-center text-sm text-muted-foreground">
           New to Smart Spend? <Link className="font-semibold text-primary hover:underline" to="/register">Create an account</Link>
         </p>
-      </GlassCard>
-    </main>
+    </AuthLayout>
   )
 }
 

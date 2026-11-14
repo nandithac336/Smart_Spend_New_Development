@@ -10,10 +10,10 @@ import {
 
 const defaultAdapter = api.defaults.adapter
 
-function unauthorized(config) {
+function unauthorized(config, code = 'UNAUTHORIZED') {
   const error = new Error('Unauthorized')
   error.config = config
-  error.response = { status: 401, data: { success: false }, config }
+  error.response = { status: 401, data: { success: false, error: { code } }, config }
   return Promise.reject(error)
 }
 
@@ -127,20 +127,87 @@ describe('API authentication interceptors', () => {
     }
   })
 
-  it('clears stored tokens and dispatches auth:logout when refresh fails', async () => {
+  it('keeps stored tokens and does not dispatch auth:logout when refresh has a network error', async () => {
     setTokens({ accessToken: 'old-access', refreshToken: 'old-refresh' })
     api.defaults.adapter = vi.fn((config) => unauthorized(config))
-    vi.spyOn(axios, 'post').mockRejectedValue(new Error('Refresh failed'))
+    const refreshError = { code: 'ERR_NETWORK', message: 'Network Error' }
+    vi.spyOn(axios, 'post').mockRejectedValue(refreshError)
     const logoutEvent = vi.fn()
     window.addEventListener('auth:logout', logoutEvent)
 
     try {
-      await expect(api.get('/private')).rejects.toThrow('Refresh failed')
+      await expect(api.get('/private')).rejects.toBe(refreshError)
+      expect(getAccessToken()).toBe('old-access')
+      expect(getRefreshToken()).toBe('old-refresh')
+      expect(logoutEvent).not.toHaveBeenCalled()
+    } finally {
+      window.removeEventListener('auth:logout', logoutEvent)
+    }
+  })
+
+  it.each([500, 429])('does not end the session when refresh returns %i', async (status) => {
+    setTokens({ accessToken: 'old-access', refreshToken: 'old-refresh' })
+    api.defaults.adapter = vi.fn((config) => unauthorized(config))
+    const refreshError = { response: { status, data: {} } }
+    vi.spyOn(axios, 'post').mockRejectedValue(refreshError)
+    const logoutEvent = vi.fn()
+    window.addEventListener('auth:logout', logoutEvent)
+
+    try {
+      await expect(api.get('/private')).rejects.toBe(refreshError)
+      expect(getAccessToken()).toBe('old-access')
+      expect(getRefreshToken()).toBe('old-refresh')
+      expect(logoutEvent).not.toHaveBeenCalled()
+    } finally {
+      window.removeEventListener('auth:logout', logoutEvent)
+    }
+  })
+
+  it('clears tokens and dispatches auth:logout when refresh returns 401', async () => {
+    setTokens({ accessToken: 'old-access', refreshToken: 'old-refresh' })
+    api.defaults.adapter = vi.fn((config) => unauthorized(config))
+    vi.spyOn(axios, 'post').mockRejectedValue({ response: { status: 401, data: {} } })
+    const logoutEvent = vi.fn()
+    window.addEventListener('auth:logout', logoutEvent)
+
+    try {
+      await expect(api.get('/private')).rejects.toMatchObject({ response: { status: 401 } })
       expect(getAccessToken()).toBeNull()
       expect(getRefreshToken()).toBeNull()
       expect(logoutEvent).toHaveBeenCalledTimes(1)
     } finally {
       window.removeEventListener('auth:logout', logoutEvent)
     }
+  })
+
+  it('clears the session and dispatches auth:logout when no refresh token is available', async () => {
+    localStorage.setItem('smartspend.accessToken', 'old-access')
+    localStorage.removeItem('smartspend.refreshToken')
+    api.defaults.adapter = vi.fn((config) => unauthorized(config))
+    const refreshCall = vi.spyOn(axios, 'post')
+    const logoutEvent = vi.fn()
+    window.addEventListener('auth:logout', logoutEvent)
+
+    try {
+      await expect(api.get('/private')).rejects.toThrow('No refresh token is available')
+      expect(refreshCall).not.toHaveBeenCalled()
+      expect(getAccessToken()).toBeNull()
+      expect(getRefreshToken()).toBeNull()
+      expect(logoutEvent).toHaveBeenCalledTimes(1)
+    } finally {
+      window.removeEventListener('auth:logout', logoutEvent)
+    }
+  })
+
+  it('does not refresh a 401 with a different error code', async () => {
+    setTokens({ accessToken: 'old-access', refreshToken: 'old-refresh' })
+    api.defaults.adapter = vi.fn((config) => unauthorized(config, 'FORBIDDEN'))
+    const refreshCall = vi.spyOn(axios, 'post')
+
+    await expect(api.get('/private')).rejects.toMatchObject({ response: { status: 401 } })
+
+    expect(refreshCall).not.toHaveBeenCalled()
+    expect(getAccessToken()).toBe('old-access')
+    expect(getRefreshToken()).toBe('old-refresh')
   })
 })

@@ -29,14 +29,44 @@ function tzOffsetMs(timeZone, date) {
   return asUtc - Math.floor(date.getTime() / 1000) * 1000;
 }
 
-export function startOfDay(timeZone, date = new Date()) {
-  const off = tzOffsetMs(timeZone, date);
-  const local = new Date(date.getTime() + off);
-  return new Date(Date.UTC(local.getUTCFullYear(), local.getUTCMonth(), local.getUTCDate()) - off);
+// Converts a UTC-midnight calendar date to midnight in the requested timezone.
+export function startOfLocalDate(timeZone, calendarDate) {
+  const date = new Date(calendarDate);
+  if (Number.isNaN(date.getTime())) throw new RangeError("Invalid calendar date");
+
+  const localMidnight = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+  let timestamp = localMidnight;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const adjusted = localMidnight - tzOffsetMs(timeZone, new Date(timestamp));
+    if (adjusted === timestamp) break;
+    timestamp = adjusted;
+  }
+  return new Date(timestamp);
+}
+
+export function startOfDay(timeZone, date = new Date(), dayOffset = 0) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  const values = Object.fromEntries(
+    parts.filter((part) => part.type !== "literal").map(({ type, value }) => [type, value])
+  );
+  const calendarDate = new Date(Date.UTC(+values.year, +values.month - 1, +values.day + dayOffset));
+  return startOfLocalDate(timeZone, calendarDate);
 }
 
 export function startOfMonth(timeZone, date = new Date(), monthOffset = 0) {
-  const off = tzOffsetMs(timeZone, date);
-  const local = new Date(date.getTime() + off);
-  return new Date(Date.UTC(local.getUTCFullYear(), local.getUTCMonth() + monthOffset, 1) - off);
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+  }).formatToParts(date);
+  const values = Object.fromEntries(
+    parts.filter((part) => part.type !== "literal").map(({ type, value }) => [type, value])
+  );
+  const calendarDate = new Date(Date.UTC(+values.year, +values.month - 1 + monthOffset, 1));
+  return startOfLocalDate(timeZone, calendarDate);
 }

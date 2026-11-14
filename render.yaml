@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: smartspend-backend
+    runtime: node
+    plan: starter
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health/db
+    disk:
+      name: smartspend-private-uploads
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        sync: false
+      - key: SCAN_STORAGE_DIR
+        value: /var/data/scans
+      - key: STATEMENT_STORAGE_DIR
+        value: /var/data/statements

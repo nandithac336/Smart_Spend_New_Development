@@ -4,5 +4,21 @@
   "rules": {
     "react/rules-of-hooks": "error",
     "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
+  },
+  "overrides": [
+    {
+      "files": [
+        "src/components/transactions/TransactionForm.jsx",
+        "src/components/transactions/TransactionFormFields.jsx",
+        "src/components/budgets/BudgetForm.jsx",
+        "src/components/recurring/RecurringForm.jsx",
+        "src/components/settings/ProfileSettings.jsx",
+        "src/components/wallets/TransferForm.jsx",
+        "src/pages/Register.jsx"
+      ],
+      "rules": {
+        "react/incompatible-library": "off"
+      }
+    }
+  ]
 }

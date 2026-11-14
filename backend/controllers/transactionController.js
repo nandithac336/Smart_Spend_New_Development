@@ -4,6 +4,7 @@ import { Category } from "../models/Category.js";
 import { ApiError } from "../utils/apiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { makeDedupeHash, toMerchantKey } from "../utils/merchant.js";
+import { queueCategorizationForTransaction } from "../services/categorizationService.js";
 
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -44,6 +45,7 @@ export const createTransaction = asyncHandler(async (req, res) => {
       dedupeHash: makeDedupeHash({ userId, merchantKey, amount: body.amount, txnDate }),
       status: "confirmed",
     });
+    queueCategorizationForTransaction(txn);
     res.status(201).json({ success: true, data: txn });
   } catch (err) {
     if (err?.code === 11000 && body.clientId) {
@@ -75,7 +77,16 @@ export const listTransactions = asyncHandler(async (req, res) => {
   }
   if (q.q) {
     const rx = new RegExp(escapeRegex(q.q), "i");
-    filter.$or = [{ merchant: rx }, { note: rx }];
+    const [categoryIds, walletIds] = await Promise.all([
+      Category.find({ $or: [{ userId: null }, { userId: req.user._id }], name: rx }).distinct("_id"),
+      Wallet.find({ userId: req.user._id, name: rx }).distinct("_id"),
+    ]);
+    filter.$or = [
+      { merchant: rx },
+      { note: rx },
+      { categoryId: { $in: categoryIds } },
+      { walletId: { $in: walletIds } },
+    ];
   }
 
   const [data, total] = await Promise.all([

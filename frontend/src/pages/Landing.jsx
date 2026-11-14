@@ -1,71 +1,70 @@
-import { ArrowRight, LockKeyhole, Smartphone, Timer } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth.js'
-import AuroraBackground from '@/components/common/AuroraBackground.jsx'
-import GlassCard from '@/components/common/GlassCard.jsx'
 import { Button } from '@/components/ui/button.jsx'
-
-const features = [
-  { icon: Smartphone, title: 'Cash and UPI', description: 'Keep all your everyday spending in one clear view.' },
-  { icon: Timer, title: 'Quick to add', description: 'Log a cash expense in about 3 seconds.' },
-  { icon: LockKeyhole, title: 'Private to you', description: 'Your financial life stays yours.' },
-]
+import Navbar from '@/components/landing/Navbar.jsx'
+import Hero from '@/components/landing/Hero.jsx'
+import BentoGrid from '@/components/landing/BentoGrid.jsx'
+import HowItWorks from '@/components/landing/HowItWorks.jsx'
+import IndiaStrip from '@/components/landing/IndiaStrip.jsx'
+import Footer from '@/components/landing/Footer.jsx'
+import './Landing.css'
 
 function Landing() {
   const { status } = useAuth()
   const authenticated = status === 'authenticated'
+  const destination = authenticated ? '/dashboard' : '/register'
 
   return (
-    <main className="relative isolate min-h-screen overflow-hidden px-5 py-8 sm:px-8">
-      <AuroraBackground animated />
-      <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl flex-col">
-        <header className="flex items-center justify-between">
-          <Link className="text-lg font-bold tracking-tight" to="/">Smart Spend</Link>
-          <Button asChild variant="outline">
-            <Link to={authenticated ? '/dashboard' : '/login'}>
-              {authenticated ? 'Open dashboard' : 'Log in'}
-            </Link>
-          </Button>
-        </header>
+    <div className="landing-page">
+      <Navbar authenticated={authenticated} />
+      <main>
+        <Hero authenticated={authenticated} />
 
-        <section className="flex flex-1 flex-col justify-center py-16 text-center">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">
-            Your money, in focus
-          </p>
-          <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
-            Track every rupee. Spend smarter.
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
-            A calmer, clearer way to stay on top of everyday spending.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Button asChild size="lg">
-              <Link to={authenticated ? '/dashboard' : '/register'}>
-                {authenticated ? 'Open dashboard' : 'Get started'}
-                <ArrowRight />
+        <section aria-labelledby="landing-features-title" className="landing-section" id="features">
+          <div className="landing-section-heading">
+            <p className="landing-eyebrow">Built for everyday money</p>
+            <h2 id="landing-features-title">Everything in one clear place.</h2>
+            <p>Simple tools to record activity, keep wallets organized, and understand where your money goes.</p>
+          </div>
+          <BentoGrid />
+        </section>
+
+        <section aria-labelledby="landing-how-title" className="landing-section landing-how-section" id="how">
+          <div className="landing-section-heading">
+            <p className="landing-eyebrow">A clearer routine</p>
+            <h2 id="landing-how-title">From everyday activity to a clearer picture.</h2>
+            <p>Keep the process simple: record, organize, and review.</p>
+          </div>
+          <HowItWorks />
+        </section>
+
+        <section aria-labelledby="landing-benefits-title" className="landing-section landing-benefits-section" id="benefits">
+          <div className="landing-section-heading">
+            <p className="landing-eyebrow">Thoughtfully made</p>
+            <h2 id="landing-benefits-title">A personal view of your finances.</h2>
+          </div>
+          <IndiaStrip />
+        </section>
+
+        <section className="landing-final-cta">
+          <div className="landing-final-cta-glow" aria-hidden="true" />
+          <p className="landing-eyebrow">Make money feel more manageable</p>
+          <h2>A clearer view starts with one small step.</h2>
+          <p>Bring your everyday finances together and take it from there.</p>
+          <div>
+            <Button asChild className="landing-primary-cta" size="lg">
+              <Link to={destination}>
+                {authenticated ? 'Open dashboard' : 'Get started free'}
+                <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
-            {!authenticated && (
-              <Button asChild size="lg" variant="outline">
-                <Link to="/login">Log in</Link>
-              </Button>
-            )}
+            {!authenticated && <Link className="landing-final-login" to="/login">Already have an account? Log in</Link>}
           </div>
         </section>
-
-        <section aria-label="Features" className="grid gap-4 pb-4 sm:grid-cols-3">
-          {features.map(({ icon: Icon, title, description }) => (
-            <GlassCard className="text-left" key={title}>
-              <span className="inline-flex size-10 items-center justify-center rounded-xl bg-accent text-accent-foreground">
-                <Icon aria-hidden="true" className="size-5" />
-              </span>
-              <h2 className="mt-4 font-semibold">{title}</h2>
-              <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-            </GlassCard>
-          ))}
-        </section>
-      </div>
-    </main>
+      </main>
+      <Footer />
+    </div>
   )
 }
 

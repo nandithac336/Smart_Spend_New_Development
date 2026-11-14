@@ -6,6 +6,7 @@ import { Toaster } from 'sonner'
 import { LazyMotion, MotionConfig, domMax } from 'motion/react'
 import { queryClient } from './lib/queryClient.js'
 import { useLowPower } from './hooks/useLowPower.js'
+import FullScreenLoader from './components/layout/FullScreenLoader.jsx'
 import '@fontsource-variable/plus-jakarta-sans'
 import './index.css'
 import { router } from './App.jsx'
@@ -19,7 +20,7 @@ export function AppProviders() {
     <MotionConfig reducedMotion="user">
       <LazyMotion features={domMax}>
         <QueryClientProvider client={queryClient}>
-          <RouterProvider router={browserRouter} />
+          <RouterProvider router={browserRouter} fallbackElement={<FullScreenLoader />} />
           <Toaster richColors position="top-right" />
         </QueryClientProvider>
       </LazyMotion>

@@ -1,47 +1,74 @@
-import React, { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { ArrowUpRight, Menu, WalletCards, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button.jsx'
 
-export default function Navbar({ user }) {
-  const [scrolled, setScrolled] = useState(false)
-  const [open, setOpen] = useState(false)
-
-  useEffect(() => {
-    function onScroll() {
-      setScrolled(window.scrollY > 24)
-    }
-    onScroll()
-    window.addEventListener('scroll', onScroll)
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
+function AuthLinks({ authenticated, mobile = false, onNavigate }) {
+  if (authenticated) {
+    return (
+      <Button asChild size={mobile ? 'default' : 'sm'}>
+        <Link onClick={onNavigate} to="/dashboard">
+          Open dashboard <ArrowUpRight aria-hidden="true" />
+        </Link>
+      </Button>
+    )
+  }
 
   return (
-    <header className={`fixed inset-x-0 top-4 z-50 mx-auto max-w-6xl px-4 transition-all ${scrolled ? 'backdrop-blur-md bg-white/30 dark:bg-black/30 glass' : 'bg-transparent'}`}>
-      <div className="flex items-center justify-between py-3">
-        <Link to="/" className="text-lg font-bold tracking-tight">Smart Spend</Link>
-        <nav className="hidden items-center gap-4 md:flex">
-          <a href="#features" className="text-sm">Features</a>
-          <a href="#how" className="text-sm">How it works</a>
-          <a href="#pricing" className="text-sm">Pricing</a>
-          <Button asChild variant="ghost">
-            <Link to={user ? '/dashboard' : '/login'}>
-              {user ? 'Open dashboard' : 'Log in'}
-            </Link>
-          </Button>
+    <>
+      <Button asChild className={mobile ? 'w-full' : undefined} size={mobile ? 'default' : 'sm'}>
+        <Link onClick={onNavigate} to="/register">Get started</Link>
+      </Button>
+      {mobile ? (
+        <Link className="landing-mobile-login" onClick={onNavigate} to="/login">Log in</Link>
+      ) : (
+        <Button asChild variant="ghost">
+          <Link to="/login">Log in</Link>
+        </Button>
+      )}
+    </>
+  )
+}
+
+export default function Navbar({ authenticated = false }) {
+  const [open, setOpen] = useState(false)
+  const closeMenu = () => setOpen(false)
+
+  return (
+    <header className="landing-nav-wrap">
+      <div className="landing-nav glass-strong">
+        <Link aria-label="SmartSpend home" className="landing-brand" onClick={closeMenu} to="/">
+          <span className="landing-brand-mark"><WalletCards aria-hidden="true" /></span>
+          <span>Smart<span>Spend</span></span>
+        </Link>
+
+        <nav aria-label="Main navigation" className="landing-desktop-nav">
+          <a href="#features">Features</a>
+          <a href="#how">How it works</a>
+          <a href="#benefits">Why SmartSpend</a>
+          <AuthLinks authenticated={authenticated} />
         </nav>
-        <div className="md:hidden">
-          <button aria-label="menu" onClick={() => setOpen(v => !v)} className="p-2">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h16" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          </button>
-        </div>
+
+        <button
+          aria-expanded={open}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          className="landing-menu-button"
+          onClick={() => setOpen((value) => !value)}
+          type="button"
+        >
+          {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+        </button>
       </div>
+
       {open && (
-        <div className="mt-2 rounded-lg p-4 shadow-lg bg-popover glass md:hidden">
-          <a href="#features" className="block py-2">Features</a>
-          <a href="#how" className="block py-2">How it works</a>
-          <a href="#pricing" className="block py-2">Pricing</a>
-          <Link to={user ? '/dashboard' : '/login'} className="block py-2 font-semibold">{user ? 'Open dashboard' : 'Log in'}</Link>
-        </div>
+        <nav aria-label="Mobile navigation" className="landing-mobile-nav glass-strong">
+          <a href="#features" onClick={closeMenu}>Features</a>
+          <a href="#how" onClick={closeMenu}>How it works</a>
+          <a href="#benefits" onClick={closeMenu}>Why SmartSpend</a>
+          <div className="landing-mobile-auth">
+            <AuthLinks authenticated={authenticated} mobile onNavigate={closeMenu} />
+          </div>
+        </nav>
       )}
     </header>
   )

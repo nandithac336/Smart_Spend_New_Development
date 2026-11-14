@@ -3,8 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Smart Spend helps you track cash and UPI spending in one simple place." />
     <meta name="theme-color" content="#16a34a" />
+    <meta name="theme-color" content="#0b1511" media="(prefers-color-scheme: dark)" />
     <title>Smart Spend</title>
+    <script>
+      (() => {
+        try {
+          const theme = localStorage.getItem('smart-spend-theme') || 'system'
+          const dark = theme === 'dark' || (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.classList.toggle('dark', dark)
+          document.documentElement.style.colorScheme = dark ? 'dark' : 'light'
+
+          const savedEffects = localStorage.getItem('smart-spend-effects') || 'auto'
+          const mode = savedEffects === 'full' || savedEffects === 'reduced' || savedEffects === 'auto' ? savedEffects : 'auto'
+          const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection
+          const slowConnection = connection?.saveData === true || connection?.effectiveType === '2g' || connection?.effectiveType === 'slow-2g'
+          const weakDevice =
+            (typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 2) ||
+            (typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 2)
+          const shouldLowPower = mode === 'reduced' ? true : mode === 'full' ? false : Boolean(slowConnection || weakDevice)
+          document.documentElement.dataset.lowPower = String(shouldLowPower)
+        } catch {
+          // Storage can be blocked in private mode; keep the default theme and motion settings.
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

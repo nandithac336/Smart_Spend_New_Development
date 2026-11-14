@@ -34,11 +34,13 @@ export async function getWalletDeltas(userId) {
   return new Map(rows.map((r) => [String(r._id), r.delta]));
 }
 
-export async function listWalletsWithBalance(userId, { includeArchived = false } = {}) {
+export async function listWalletsWithBalance(userId, { includeArchived = false, limit } = {}) {
   const filter = { userId };
   if (!includeArchived) filter.archived = false;
+  let walletQuery = Wallet.find(filter).sort({ isDefault: -1, createdAt: 1 });
+  if (Number.isInteger(limit) && limit > 0) walletQuery = walletQuery.limit(limit);
   const [wallets, deltas] = await Promise.all([
-    Wallet.find(filter).sort({ isDefault: -1, createdAt: 1 }).lean(),
+    walletQuery.lean(),
     getWalletDeltas(userId),
   ]);
   return wallets.map((w) => ({

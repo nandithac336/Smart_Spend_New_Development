@@ -11,7 +11,21 @@ export const listCategories = asyncHandler(async (req, res) => {
 });
 
 export const createCategory = asyncHandler(async (req, res) => {
-  const category = await Category.create({ ...req.validated.body, userId: req.user._id });
+  const input = req.validated.body;
+  const duplicate = await Category.findOne({
+    userId: { $in: [null, req.user._id] },
+    type: input.type,
+    name: input.name,
+  }).collation({ locale: "en", strength: 2 });
+  if (duplicate) throw ApiError.conflict("A category with this name already exists");
+
+  let category;
+  try {
+    category = await Category.create({ ...input, userId: req.user._id });
+  } catch (error) {
+    if (error?.code === 11000) throw ApiError.conflict("A category with this name already exists");
+    throw error;
+  }
   res.status(201).json({ success: true, data: category });
 });
 

@@ -8,10 +8,24 @@ describe('getErrorMessage', () => {
     })).toBe('Invalid amount')
   })
 
-  it('falls back to a transport message and then the default', () => {
-    expect(getErrorMessage(new Error('Network unavailable'))).toBe('Network unavailable')
+  it('returns a friendly message for network errors', () => {
+    expect(getErrorMessage({ code: 'ERR_NETWORK' }))
+      .toBe("Can't reach the server. Is the backend running?")
+    expect(getErrorMessage({ request: {} }))
+      .toBe("Can't reach the server. Is the backend running?")
+  })
+
+  it('returns a friendly message for rate limiting', () => {
+    expect(getErrorMessage({ response: { status: 429, data: {} } }))
+      .toBe('Too many attempts. Please wait a few minutes.')
+  })
+
+  it('uses the API response message or fallback without exposing technical errors', () => {
+    expect(getErrorMessage({ response: { status: 400, data: { message: 'Invalid request' } } }))
+      .toBe('Invalid request')
     expect(getErrorMessage({})).toBe('Something went wrong')
     expect(getErrorMessage({}, 'Could not save')).toBe('Could not save')
+    expect(getErrorMessage(new Error('Network Error'))).toBe('Something went wrong')
   })
 })
 

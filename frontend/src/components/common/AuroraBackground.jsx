@@ -1,15 +1,15 @@
 import { cn } from '@/lib/utils.js'
-import { useLowPower } from '@/hooks/useLowPower.js'
+import { useMotionDisabled } from '@/hooks/useMotionDisabled.js'
 
 function AuroraBackground({ animated = false, className, children }) {
-  const { lowPower } = useLowPower()
+  const motionDisabled = useMotionDisabled()
 
   return (
     <div
       aria-hidden="true"
       className={cn(
         'pointer-events-none absolute inset-0 -z-10 overflow-hidden',
-        animated && !lowPower && 'aurora-animated',
+        animated && !motionDisabled && 'aurora-animated',
         className,
       )}
     >

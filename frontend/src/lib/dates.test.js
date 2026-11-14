@@ -1,5 +1,22 @@
 import { describe, expect, it } from 'vitest'
-import { groupByDay } from './dates.js'
+import { formatTxnDate, formatTxnTime, groupByDay } from './dates.js'
+
+describe('transaction date formatters', () => {
+  const now = new Date('2026-10-14T12:00:00.000Z')
+
+  it('formats Today, Yesterday and dated labels in Asia/Kolkata', () => {
+    expect(formatTxnDate('2026-10-14T10:15:00.000Z', { timeZone: 'Asia/Kolkata', now }))
+      .toBe('Today, 3:45 pm')
+    expect(formatTxnDate('2026-10-13T10:15:00.000Z', { timeZone: 'Asia/Kolkata', now }))
+      .toBe('Yesterday, 3:45 pm')
+    expect(formatTxnDate('2026-10-12T10:15:00.000Z', { timeZone: 'Asia/Kolkata', now }))
+      .toBe('12 Oct 2026, 3:45 pm')
+  })
+
+  it('formats a transaction time in the requested timezone', () => {
+    expect(formatTxnTime('2026-10-14T10:15:00.000Z', 'Asia/Kolkata')).toBe('3:45 pm')
+  })
+})
 
 describe('groupByDay', () => {
   it('labels dates as Today and Yesterday in Asia/Kolkata', () => {

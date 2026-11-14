@@ -10,8 +10,25 @@ import walletRoutes from "./routes/walletRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
 import transactionRoutes from "./routes/transactionRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import budgetRoutes from "./routes/budgetRoutes.js";
+import goalRoutes from "./routes/goalRoutes.js";
+import recurringTransactionRoutes from "./routes/recurringTransactionRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js";
+import exportRoutes from "./routes/exportRoutes.js";
+import scanRoutes from "./routes/scanRoutes.js";
+import statementImportRoutes from "./routes/statementImportRoutes.js";
+import categorizationRoutes from "./routes/categorizationRoutes.js";
+import askSpartRoutes from "./routes/askSpartRoutes.js";
+import anomalyRoutes from "./routes/anomalyRoutes.js";
+import predictionRoutes from "./routes/predictionRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
+import financialHealthRoutes from "./routes/financialHealthRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
+import syncRoutes from "./routes/syncRoutes.js";
 
 const app = express();
+
+if (env.NODE_ENV === "production") app.set("trust proxy", 1);
 
 app.use(helmet());
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
@@ -29,6 +46,21 @@ app.use("/api/wallets", walletRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/budgets", budgetRoutes);
+app.use("/api/goals", goalRoutes);
+app.use("/api/recurring", recurringTransactionRoutes);
+app.use("/api/analytics", analyticsRoutes);
+app.use("/api/export", exportRoutes);
+app.use("/api/scans", scanRoutes);
+app.use("/api/imports", statementImportRoutes);
+app.use("/api/categorization", categorizationRoutes);
+app.use("/api/ask-spart", askSpartRoutes);
+app.use("/api/anomalies", anomalyRoutes);
+app.use("/api/predictions", predictionRoutes);
+app.use("/api/subscriptions", subscriptionRoutes);
+app.use("/api/financial-health", financialHealthRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/sync", syncRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

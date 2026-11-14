@@ -27,18 +27,41 @@ const transactionSchema = new mongoose.Schema(
     },
     status: { type: String, enum: ["confirmed", "pending_review"], default: "confirmed" },
     upiRef: { type: String },
+    statementReference: { type: String, trim: true, maxlength: 100 },
+    statementDraftId: { type: mongoose.Schema.Types.ObjectId, ref: "StatementTransactionDraft" },
     dedupeHash: { type: String },
     clientId: { type: String }, // UUID made on the device; makes retries and offline sync safe
+    recurringScheduleId: { type: mongoose.Schema.Types.ObjectId, ref: "RecurringTransaction" },
+    scanId: { type: mongoose.Schema.Types.ObjectId, ref: "Scan" },
     deletedAt: { type: Date, default: null }, // soft delete (trash)
   },
   { timestamps: true }
 );
 
 transactionSchema.index({ userId: 1, txnDate: -1 });
+transactionSchema.index({ userId: 1, updatedAt: 1, _id: 1 });
 transactionSchema.index({ userId: 1, categoryId: 1, txnDate: -1 });
+transactionSchema.index({ userId: 1, merchantKey: 1, type: 1, status: 1, deletedAt: 1, categoryId: 1 });
 transactionSchema.index({ userId: 1, walletId: 1 });
 transactionSchema.index({ userId: 1, deletedAt: 1 });
+transactionSchema.index({ userId: 1, recurringScheduleId: 1, txnDate: -1 });
+transactionSchema.index(
+  { userId: 1, scanId: 1 },
+  { unique: true, partialFilterExpression: { scanId: { $type: "objectId" } } }
+);
 transactionSchema.index({ userId: 1, dedupeHash: 1 });
+transactionSchema.index(
+  { userId: 1, statementDraftId: 1 },
+  { unique: true, partialFilterExpression: { statementDraftId: { $type: "objectId" } } }
+);
+transactionSchema.index(
+  { userId: 1, statementReference: 1 },
+  { partialFilterExpression: { statementReference: { $type: "string" } } }
+);
+transactionSchema.index(
+  { userId: 1, upiRef: 1 },
+  { partialFilterExpression: { upiRef: { $type: "string" } } }
+);
 transactionSchema.index(
   { userId: 1, clientId: 1 },
   { unique: true, partialFilterExpression: { clientId: { $type: "string" } } }

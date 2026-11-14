@@ -1,14 +1,24 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { WalletCards } from 'lucide-react'
+
+const CURRENT_YEAR = new Date().getFullYear()
 
 export default function Footer() {
   return (
-    <footer className="mt-12 border-t border-border bg-transparent py-8">
-      <div className="mx-auto max-w-6xl px-4 text-center">
-        <div className="mb-4 flex items-center justify-center gap-4">
-          <Link to="/">Smart Spend</Link>
-        </div>
-        <p className="text-sm text-muted-foreground">© {new Date().getFullYear()} Smart Spend — Made with care.</p>
+    <footer className="landing-footer">
+      <div className="landing-footer-inner">
+        <Link aria-label="SmartSpend home" className="landing-brand" to="/">
+          <span className="landing-brand-mark"><WalletCards aria-hidden="true" /></span>
+          <span>Smart<span>Spend</span></span>
+        </Link>
+        <nav aria-label="Footer navigation" className="landing-footer-links">
+          <a href="#features">Features</a>
+          <a href="#how">How it works</a>
+          <Link to="/login">Log in</Link>
+          <Link to="/register">Get started</Link>
+        </nav>
+        <p>© {CURRENT_YEAR} SmartSpend</p>
       </div>
     </footer>
   )

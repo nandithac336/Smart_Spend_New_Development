@@ -6,11 +6,19 @@ import {
   setTokens,
 } from './tokenStorage.js'
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
-export const api = axios.create({ baseURL: API_BASE_URL })
+const configuredApiBaseUrl = import.meta.env.VITE_API_URL?.trim()
+export const API_BASE_URL = (configuredApiBaseUrl || '/api').replace(/\/+$/, '')
+export const api = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 10_000,
+})
 
 const REFRESH_LOCK_NAME = 'smartspend-auth-token-refresh'
 let refreshPromise
+
+function isSessionEnding(error) {
+  return !getRefreshToken() || [400, 401, 403].includes(error.response?.status)
+}
 
 function getBearerToken(config) {
   const authorization = config.headers?.Authorization ?? config.headers?.authorization
@@ -60,6 +68,7 @@ api.interceptors.response.use(
     const originalRequest = error.config
     if (
       error.response?.status !== 401 ||
+      error.response.data?.error?.code !== 'UNAUTHORIZED' ||
       !originalRequest ||
       originalRequest.skipAuthRefresh ||
       originalRequest._retry
@@ -72,8 +81,10 @@ api.interceptors.response.use(
 
     if (!refreshPromise) {
       refreshPromise = requestRotatedAccessToken(failedAccessToken).catch((refreshError) => {
-        clearTokens()
-        window.dispatchEvent(new Event('auth:logout'))
+        if (isSessionEnding(refreshError)) {
+          clearTokens()
+          window.dispatchEvent(new Event('auth:logout'))
+        }
         throw refreshError
       }).finally(() => {
         refreshPromise = undefined

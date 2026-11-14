@@ -1,39 +1,62 @@
-const AMOUNT_PATTERN = /^([+-]?)(\d+)(?:\.(\d*))?$/
+const AMOUNT = /^(\d+)(?:\.(\d{0,2}))?$/
 
-export function toPaise(value) {
-  if (typeof value === 'number') {
-    if (!Number.isFinite(value)) return null
-    return Math.round(Math.abs(value) * 100 + Number.EPSILON) * Math.sign(value)
+export function toPaise(input) {
+  let text
+
+  if (typeof input === 'number') {
+    if (!Number.isFinite(input) || input < 0) return null
+    text = String(input)
+  } else if (typeof input === 'string') {
+    text = input.trim().replace(/[₹,\s]/g, '')
+  } else {
+    return null
   }
-  if (typeof value !== 'string') return null
 
-  const normalized = value.trim().replace(/[₹,\s]/g, '')
-  if (!normalized) return 0
-
-  const match = normalized.match(AMOUNT_PATTERN)
+  const match = text.match(AMOUNT)
   if (!match) return null
 
-  const [, sign, rupees, fraction = ''] = match
-  const paise = Number(rupees) * 100 + Number((fraction.slice(0, 2) + '00').slice(0, 2))
-  const rounded = paise + (Number(fraction[2] ?? 0) >= 5 ? 1 : 0)
-  return sign === '-' ? -rounded : rounded
+  const [, whole, fraction] = match
+  const paise = Number(whole) * 100 + Number((fraction ?? '').padEnd(2, '0'))
+  return Number.isSafeInteger(paise) ? paise : null
 }
 
 export function fromPaise(paise) {
-  if (!Number.isFinite(Number(paise))) {
-    throw new TypeError('Paise must be a finite number')
+  let value
+  try {
+    value = Number(paise)
+  } catch {
+    return 0
   }
-  return Number(paise) / 100
+  return Number.isFinite(value) ? value / 100 : 0
 }
 
-export function formatINR(paise) {
-  if (!Number.isFinite(Number(paise))) {
-    throw new TypeError('Paise must be a finite number')
+export function formatINR(value, options = {}) {
+  let numericValue
+  try {
+    numericValue = Number(value)
+  } catch {
+    numericValue = 0
   }
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(Number(paise) / 100)
+  if (!Number.isFinite(numericValue) || numericValue === 0) numericValue = 0
+
+  let minimumFractionDigits = 0
+  try {
+    const requestedDigits = Number(options?.minimumFractionDigits)
+    if (Number.isInteger(requestedDigits) && requestedDigits >= 0 && requestedDigits <= 2) {
+      minimumFractionDigits = requestedDigits
+    }
+  } catch {
+    minimumFractionDigits = 0
+  }
+
+  try {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits,
+      maximumFractionDigits: 2,
+    }).format(numericValue / 100)
+  } catch {
+    return '₹0'
+  }
 }

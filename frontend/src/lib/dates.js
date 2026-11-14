@@ -1,5 +1,10 @@
 const DEFAULT_TIME_ZONE = 'Asia/Kolkata'
 
+function validDate(value) {
+  const date = new Date(value)
+  return Number.isFinite(date.getTime()) ? date : null
+}
+
 function dayKey(date, timeZone) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone,
@@ -15,6 +20,40 @@ function shiftDay(key, difference) {
   const [year, month, day] = key.split('-').map(Number)
   const date = new Date(Date.UTC(year, month - 1, day + difference))
   return date.toISOString().slice(0, 10)
+}
+
+export function formatTxnTime(value, timeZone = DEFAULT_TIME_ZONE) {
+  const date = validDate(value)
+  if (!date) return ''
+
+  const parts = new Intl.DateTimeFormat('en-IN', {
+    timeZone,
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  }).formatToParts(date)
+  const values = Object.fromEntries(parts.map(({ type, value: part }) => [type, part]))
+  return `${values.hour}:${values.minute} ${values.dayPeriod.toLowerCase()}`
+}
+
+export function formatTxnDate(value, { timeZone = DEFAULT_TIME_ZONE, now = new Date() } = {}) {
+  const date = validDate(value)
+  const currentDate = validDate(now)
+  if (!date || !currentDate) return ''
+
+  const currentDay = dayKey(currentDate, timeZone)
+  const dateDay = dayKey(date, timeZone)
+  const relativeDate = dateDay === currentDay
+    ? 'Today'
+    : dateDay === shiftDay(currentDay, -1)
+      ? 'Yesterday'
+      : new Intl.DateTimeFormat('en-IN', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+          timeZone,
+        }).format(date)
+  return `${relativeDate}, ${formatTxnTime(date, timeZone)}`
 }
 
 export function groupByDay(

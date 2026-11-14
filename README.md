@@ -68,15 +68,16 @@ nightly "where did my cash go?" check-in
 unlogged spending bucket, categorized later
 merchant memory (correct once, remembered)
 Phase 5: Intelligence
-unusual spending alert
-month-end balance prediction
-subscription detector
-financial health score (0 to 100)
+explainable, user-specific transaction anomaly detection (implemented in the backend)
+statistical expense prediction (implemented in the backend)
+subscription detection with user review (implemented in the backend)
+financial health score (0 to 100; backend implementation complete)
+in-app budget, recurring, subscription, savings-goal and anomaly alerts
 Ask Spart: chat that answers only from the user's real data
 spending heatmap calendar
 Phase 6: App experience and launch
 installable PWA (manifest and service worker)
-offline entry with sync when internet returns
+backend transaction push/pull synchronization (implemented; frontend offline queue and service worker remain planned)
 push notifications and reminders
 PIN or app lock
 deployment and testing
@@ -238,12 +239,65 @@ POST /api/review-queue/:id/confirm
 POST /api/cash/reconcile
 POST /api/voice/parse
 
+Offline synchronization (backend only)
+
+POST /api/sync/push
+GET /api/sync/pull
+GET /api/sync/status
+
+Sync is limited to authenticated transaction create/update/delete operations; browser offline storage, service workers, and file sync are not implemented yet.
+
+## Deployment preparation (not deployed)
+
+The root `render.yaml` prepares a Render Node backend with `backend/` as its root, `npm ci` / `npm start`, `/api/health` checks, generated JWT secrets, and a persistent disk for private scan/statement files. Render must have persistent disk support enabled; local upload storage is instance-bound, so horizontal scaling needs shared private object storage and distributed job coordination.
+
+For Vercel, configure the project root as `frontend/`, build with `npm run build`, output `dist`, and set `VITE_API_URL` to `https://<backend-host>/api`. The frontend rewrite configuration is in `frontend/vercel.json`. Configure the backend `CLIENT_URL` to the exact HTTPS frontend origin. Set `MONGODB_URI` to MongoDB Atlas and allow only the Render service's required outbound addresses; enable TLS, least-privilege credentials and backups. Never use public Atlas network access as a shortcut.
+
+No deployment has been performed. Review the backend deployment and security checklist in [backend/README.md](./backend/README.md#production-deployment-readiness-step-16) and configure secrets only in Render/Vercel dashboards, not in committed files.
+
+Current audit status: the production dependency audit is clear; the full development-inclusive audit retains two moderate `nodemon`/`minimatch` findings. No application deployment has been performed.
+
+Offline synchronization (backend only)
+
+POST /api/sync/push
+GET /api/sync/pull
+GET /api/sync/status
+
+Sync is limited to authenticated transaction create/update/delete operations; browser offline storage, service workers, and file sync are not implemented yet.
+
 Intelligence (Phase 5)
 
-GET /api/insights/summary
-GET /api/insights/prediction
-GET /api/insights/health-score
-POST /api/ask
+GET /api/predictions/overview
+GET /api/predictions/monthly
+GET /api/predictions/categories
+GET /api/predictions/daily
+GET /api/predictions/accuracy
+POST /api/anomalies/detect
+GET /api/anomalies (filters and pagination)
+GET /api/anomalies/summary
+GET /api/anomalies/:id
+PATCH /api/anomalies/:id/status
+POST /api/anomalies/transactions/:transactionId/check
+POST /api/subscriptions/detect
+GET /api/subscriptions (filters and pagination)
+GET /api/subscriptions/summary
+GET /api/subscriptions/:id
+PATCH /api/subscriptions/:id
+PATCH /api/subscriptions/:id/confirm
+PATCH /api/subscriptions/:id/dismiss
+PATCH /api/subscriptions/:id/cancel
+GET /api/subscriptions/:id/history
+GET /api/analytics/subscriptions
+GET /api/financial-health/score
+GET /api/financial-health/breakdown
+GET /api/notifications
+GET /api/notifications/unread-count
+GET /api/notifications/:id
+PATCH /api/notifications/:id/read
+PATCH /api/notifications/read-all
+DELETE /api/notifications/:id
+DELETE /api/notifications
+Ask Spart: /api/ask-spart/*
 
 Auth request examples
 
@@ -293,6 +347,11 @@ Receipt date and upload time are stored separately
 Each user can access only their own data (enforced on the server)
 No duplicate entries (unique IDs and duplicate checks)
 AI answers use only real stored data
+Anomaly results are explainable rule scores, not calibrated fraud probabilities; they never modify transactions or balances
+Expense forecasts are estimates from historical confirmed expenses, not guarantees; insufficient history returns no forecast amount
+Subscription detections are explainable payment patterns, not proof of an active commercial subscription; users confirm them explicitly
+Financial health scores are deterministic summaries of recorded data, omit unsupported dimensions and are not guarantees of financial security
+In-app notification records are deduplicated and expire after 90 days by default; email, SMS and push delivery are not included
 Receipt uploads are validated and kept private
 Offline entries sync without loss or duplication
 Passwords are stored as bcrypt hashes, never plaintext

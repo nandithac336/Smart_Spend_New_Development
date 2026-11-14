@@ -1,0 +1,97 @@
+.wallets-page .wallets-overview {
+  border: 1px solid color-mix(in srgb, var(--primary) 23%, var(--border));
+  background:
+    radial-gradient(ellipse at 87% 14%, color-mix(in srgb, var(--accent-teal) 16%, transparent), transparent 34%),
+    radial-gradient(ellipse at 4% 110%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 42%),
+    color-mix(in srgb, var(--card) 92%, transparent);
+  box-shadow: var(--glass-shadow);
+}
+
+.wallets-page .wallet-card {
+  isolation: isolate;
+  border: 1px solid var(--glass-border);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--card) 91%, var(--wallet-accent) 9%), color-mix(in srgb, var(--card) 98%, var(--wallet-accent) 2%));
+  box-shadow: var(--surface-shadow), inset 0 1px 0 rgb(255 255 255 / 5%);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.wallets-page .wallet-card::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: linear-gradient(180deg, var(--wallet-accent), color-mix(in srgb, var(--wallet-accent) 24%, transparent));
+  content: "";
+}
+
+.wallets-page .wallet-card:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--wallet-accent) 38%, var(--border));
+  box-shadow: 0 18px 42px color-mix(in srgb, var(--wallet-accent) 9%, transparent), var(--surface-shadow);
+}
+
+.wallets-page .wallet-card-cash { --wallet-accent: #34d399; }
+.wallets-page .wallet-card-bank { --wallet-accent: #60a5fa; }
+.wallets-page .wallet-card-upi { --wallet-accent: #a78bfa; }
+.wallets-page .wallet-card-card { --wallet-accent: #fbbf24; }
+.wallets-page .wallet-card-other { --wallet-accent: var(--primary); }
+
+.wallets-page .wallet-card-icon {
+  border: 1px solid color-mix(in srgb, var(--wallet-accent) 25%, transparent);
+  background: color-mix(in srgb, var(--wallet-accent) 11%, transparent);
+  color: var(--wallet-accent);
+}
+
+.wallets-page .wallet-card-orbit {
+  position: absolute;
+  z-index: -1;
+  top: -4.5rem;
+  right: -3rem;
+  width: 11rem;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--wallet-accent) 12%, transparent);
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5rem color-mix(in srgb, var(--wallet-accent) 3%, transparent), 0 0 0 3rem color-mix(in srgb, var(--wallet-accent) 2%, transparent);
+  pointer-events: none;
+}
+
+.wallets-page .wallet-default-badge {
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
+  background: color-mix(in srgb, var(--primary) 11%, transparent);
+  color: var(--primary);
+}
+
+.wallets-page .wallet-activity-link {
+  color: color-mix(in srgb, var(--wallet-accent) 75%, var(--foreground));
+}
+
+.wallets-page .wallet-activity-link:hover {
+  color: var(--foreground);
+}
+
+.wallets-page .wallet-summary-icon {
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  color: var(--primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wallets-page .wallet-card,
+  .wallets-page .wallet-card:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+html[data-low-power='true'] .wallets-page .wallet-card,
+html[data-low-power='true'] .wallets-page .wallet-card:hover {
+  border-color: var(--border);
+  background: var(--card);
+  transition: none;
+  transform: none;
+  box-shadow: var(--surface-shadow);
+}
+
+html[data-low-power='true'] .wallets-page .wallet-card-orbit {
+  display: none;
+}

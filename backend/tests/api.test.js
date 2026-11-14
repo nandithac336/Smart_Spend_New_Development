@@ -53,6 +53,15 @@ test("malformed JSON returns 400", async () => {
   assert.equal(r.status, 400);
 });
 
+test("oversized JSON returns a consistent 413 response", async () => {
+  const r = await call("POST", "/api/auth/register", JSON.stringify({ name: "x".repeat(1_100_000) }));
+  assert.equal(r.status, 413);
+  assert.deepEqual(r.json.error, {
+    code: "PAYLOAD_TOO_LARGE",
+    message: "Request body must be 1 MB or smaller",
+  });
+});
+
 test("protected routes return 401 without a token", async () => {
   for (const p of ["/api/transactions", "/api/wallets", "/api/categories", "/api/dashboard", "/api/auth/me", "/api/transactions/trash"]) {
     const r = await call("GET", p);
@@ -79,6 +88,14 @@ test("date helpers follow the Indian calendar day", () => {
   assert.equal(startOfDay("Asia/Kolkata", new Date("2026-10-18T20:00:00Z")).toISOString(), "2026-10-18T18:30:00.000Z");
   assert.equal(startOfMonth("Asia/Kolkata", new Date("2026-10-18T10:00:00Z")).toISOString(), "2026-09-30T18:30:00.000Z");
   assert.equal(startOfMonth("Asia/Kolkata", new Date("2026-10-18T10:00:00Z"), 1).toISOString(), "2026-10-31T18:30:00.000Z");
+});
+
+test("date helpers use each calendar boundary's timezone offset across daylight saving", () => {
+  const date = new Date("2026-03-08T16:00:00Z");
+  assert.equal(startOfDay("America/New_York", date).toISOString(), "2026-03-08T05:00:00.000Z");
+  assert.equal(startOfDay("America/New_York", date, 1).toISOString(), "2026-03-09T04:00:00.000Z");
+  assert.equal(startOfMonth("America/New_York", date).toISOString(), "2026-03-01T05:00:00.000Z");
+  assert.equal(startOfMonth("America/New_York", date, 1).toISOString(), "2026-04-01T04:00:00.000Z");
 });
 
 test("merchant key normalizes names", () => {

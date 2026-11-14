@@ -1,24 +1,33 @@
+import { useEffect } from 'react'
 import { AnimatePresence, m } from 'motion/react'
-import { useLocation, Outlet } from 'react-router-dom'
+import { useLocation, useOutlet } from 'react-router-dom'
 import { useMotionDisabled } from '@/hooks/useMotionDisabled.js'
 
-function PageTransition({ children }) {
+function PageTransition() {
   const location = useLocation()
+  const outlet = useOutlet()
   const motionDisabled = useMotionDisabled()
-  const content = children ?? <Outlet />
 
-  if (motionDisabled) return <div>{content}</div>
+  useEffect(() => {
+    if (motionDisabled) window.scrollTo(0, 0)
+  }, [location.pathname, motionDisabled])
+
+  if (motionDisabled) return outlet
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence
+      initial={false}
+      mode="wait"
+      onExitComplete={() => window.scrollTo(0, 0)}
+    >
       <m.div
-        key={location.pathname}
-        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -4 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
+        exit={{ opacity: 0, y: -6 }}
+        initial={{ opacity: 0, y: 8 }}
+        key={location.pathname}
+        transition={{ duration: 0.16, ease: 'easeOut' }}
       >
-        {content}
+        {outlet}
       </m.div>
     </AnimatePresence>
   )

@@ -1,51 +1,46 @@
-import React, { useMemo, Suspense, lazy } from 'react'
+import { ArrowDown, ArrowRight, ShieldCheck, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button.jsx'
-import AuroraBackground from '@/components/common/AuroraBackground.jsx'
 import { useMotionDisabled } from '@/hooks/useMotionDisabled.js'
+import ProductPreview from './PhoneMockup.jsx'
 
-const PhoneMockup = lazy(() => import('./PhoneMockup'))
-
-const rotating = ['cash', 'UPI', 'chai', 'groceries']
-
-export default function Hero({ user }) {
+export default function Hero({ authenticated }) {
   const motionDisabled = useMotionDisabled()
-  const headline = useMemo(() => rotating, [])
+  const destination = authenticated ? '/dashboard' : '/register'
 
   return (
-    <section className="relative isolate overflow-hidden px-4 py-20 sm:py-28">
-      <AuroraBackground animated={!motionDisabled} />
-
-      <div className="mx-auto max-w-6xl grid gap-8 lg:grid-cols-2 lg:items-center">
-        <div className="z-10 text-center lg:text-left">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Your money, in focus</p>
-          <h1 className="mx-auto mt-4 max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-            Track every rupee. <span className="relative inline-block">Spend <span className="text-primary">smarter</span>.</span>
+    <section className="landing-hero">
+      {!motionDisabled && <div aria-hidden="true" className="landing-hero-glow" />}
+      <div className="landing-hero-grid">
+        <div className="landing-hero-copy">
+          <p className="landing-eyebrow"><Sparkles aria-hidden="true" /> Your money, in focus</p>
+          <h1>
+            <span className="landing-title-line">Make every rupee</span>{' '}
+            <span className="landing-title-line landing-title-line-accent">make sense.</span>
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base text-muted-foreground sm:text-lg">
-            A calmer, clearer way to stay on top of everyday spending.
+          <p className="landing-hero-description">
+            Track income, spending, and wallets in one clear view. Spend with more confidence, one day at a time.
           </p>
-
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3 lg:justify-start">
-            <Button asChild size="lg" className="moving-border">
-              <Link to={user ? '/dashboard' : '/register'}>
-                {user ? 'Open dashboard' : 'Get started free'}
+          <div className="landing-hero-actions">
+            <Button asChild className="landing-primary-cta" size="lg">
+              <Link to={destination}>
+                {authenticated ? 'Open dashboard' : 'Get started free'}
+                <ArrowRight aria-hidden="true" />
               </Link>
             </Button>
-            {!user && (
-              <Button asChild size="lg" variant="outline">
+            {!authenticated && (
+              <Button asChild className="landing-login-cta" size="lg" variant="outline">
                 <Link to="/login">Log in</Link>
               </Button>
             )}
           </div>
-
-          <p className="mt-6 text-sm text-muted-foreground">No credit card required • Cancel anytime</p>
+          <p className="landing-hero-note"><ShieldCheck aria-hidden="true" /> Your financial records are tied to your account.</p>
+          <a className="landing-scroll-cue" href="#features">
+            Explore SmartSpend <ArrowDown aria-hidden="true" />
+          </a>
         </div>
-
-        <div className="z-10 flex justify-center lg:justify-end">
-          <Suspense fallback={<div className="w-64 h-96 rounded-xl glass" />}> 
-            <PhoneMockup />
-          </Suspense>
+        <div className="landing-preview-wrap">
+          <ProductPreview />
         </div>
       </div>
     </section>

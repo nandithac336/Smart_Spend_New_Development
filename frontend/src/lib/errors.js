@@ -1,8 +1,16 @@
 export function getErrorMessage(error, fallback = 'Something went wrong') {
-  return error?.response?.data?.error?.message
-    ?? error?.response?.data?.message
-    ?? error?.message
-    ?? fallback
+  if (error?.response) {
+    if (error.response.status === 429) return 'Too many attempts. Please wait a few minutes.'
+    return error.response.data?.error?.message
+      ?? error.response.data?.message
+      ?? fallback
+  }
+
+  if (error?.code === 'ERR_NETWORK' || error?.request) {
+    return "Can't reach the server. Is the backend running?"
+  }
+
+  return fallback
 }
 
 export function getFieldErrors(error) {
