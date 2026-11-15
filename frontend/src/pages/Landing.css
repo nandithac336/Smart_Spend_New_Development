@@ -1113,3 +1113,340 @@ html[data-low-power='true'] .landing-final-cta-glow {
 html[data-low-power='true'] .landing-product-preview {
   box-shadow: var(--surface-shadow);
 }
+
+/* =========================================
+   SMARTSPEND - BURNT ORANGE THEME
+   Theme overrides: preserve existing layout
+========================================= */
+
+.landing-page {
+  background:
+    radial-gradient(ellipse at 8% 5%, rgb(249 115 22 / 10%), transparent 34rem),
+    radial-gradient(ellipse at 90% 18%, rgb(234 88 12 / 8%), transparent 32rem),
+    linear-gradient(180deg, #101010 0%, #171717 52%, #101010 100%);
+  color: #f5f5f5;
+}
+
+/* Navigation */
+.landing-nav {
+  border-color: rgb(249 115 22 / 18%);
+  background: rgb(20 20 20 / 88%);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 28%);
+  backdrop-filter: blur(22px);
+}
+
+.landing-brand,
+.landing-footer .landing-brand {
+  color: #fafafa;
+}
+
+.landing-brand > span:last-child > span {
+  color: #fb923c;
+}
+
+.landing-brand-mark,
+.landing-preview-mark {
+  border-color: rgb(249 115 22 / 35%);
+  background: linear-gradient(145deg, rgb(249 115 22 / 22%), rgb(234 88 12 / 10%));
+  color: #fb923c;
+}
+
+.landing-desktop-nav > a:not([data-slot="button"]):hover,
+.landing-mobile-nav > a:hover,
+.landing-footer-links a:hover {
+  color: #fb923c;
+}
+
+.landing-menu-button {
+  border-color: rgb(249 115 22 / 22%);
+  background: #202020;
+  color: #fb923c;
+}
+
+.landing-mobile-nav {
+  border-color: rgb(249 115 22 / 18%);
+  background: rgb(25 25 25 / 96%);
+}
+
+.landing-mobile-nav > a:hover {
+  background: rgb(249 115 22 / 10%);
+}
+
+/* Hero background and glow */
+.landing-hero-glow,
+.landing-final-cta-glow {
+  background: radial-gradient(
+    ellipse,
+    rgb(249 115 22 / 22%),
+    rgb(234 88 12 / 9%) 42%,
+    transparent 72%
+  );
+}
+
+.landing-hero-glow {
+  animation: orange-glow-pulse 7s ease-in-out infinite alternate;
+}
+
+@keyframes orange-glow-pulse {
+  from {
+    opacity: 0.65;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+/* Hero text */
+.landing-eyebrow {
+  color: #fb923c;
+}
+
+.landing-eyebrow svg {
+  color: #f97316;
+}
+
+.landing-title-line-accent {
+  background: linear-gradient(100deg, #fed7aa 5%, #fb923c 48%, #ea580c 96%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.landing-hero-description {
+  color: #b3b3b3;
+}
+
+.landing-hero-note {
+  color: #999;
+}
+
+.landing-hero-note svg {
+  color: #fb923c;
+}
+
+.landing-scroll-cue {
+  color: #b3b3b3;
+}
+
+.landing-scroll-cue:hover {
+  color: #fb923c;
+}
+
+/* Primary buttons */
+.landing-primary-cta {
+  border: 1px solid rgb(255 255 255 / 12%);
+  background: linear-gradient(110deg, #fb923c, #f97316 55%, #ea580c);
+  color: #17100b;
+  box-shadow: 0 10px 30px rgb(249 115 22 / 24%);
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+.landing-primary-cta:hover {
+  background: linear-gradient(110deg, #fdba74, #fb923c 55%, #f97316);
+  box-shadow: 0 14px 36px rgb(249 115 22 / 35%);
+  transform: translateY(-2px);
+}
+
+.landing-login-cta {
+  border-color: rgb(249 115 22 / 28%);
+  background: rgb(30 30 30 / 75%);
+  color: #f5f5f5;
+}
+
+.landing-login-cta:hover {
+  border-color: #f97316;
+  background: rgb(249 115 22 / 9%);
+  color: #fdba74;
+}
+
+/* Dashboard preview */
+.landing-preview-wrap::before {
+  background: linear-gradient(
+    135deg,
+    rgb(249 115 22 / 18%),
+    rgb(234 88 12 / 8%)
+  );
+}
+
+.landing-product-preview {
+  border-color: rgb(249 115 22 / 20%);
+  background:
+    radial-gradient(ellipse at 100% 0%, rgb(249 115 22 / 10%), transparent 40%),
+    linear-gradient(150deg, #252525, #171717);
+  box-shadow:
+    0 35px 100px rgb(0 0 0 / 48%),
+    inset 0 1px 0 rgb(255 255 255 / 7%);
+  transition: border-color 250ms ease, box-shadow 250ms ease;
+}
+
+.landing-product-preview:hover {
+  border-color: rgb(249 115 22 / 38%);
+  box-shadow:
+    0 35px 100px rgb(0 0 0 / 48%),
+    0 0 35px rgb(249 115 22 / 9%);
+}
+
+.landing-preview-brand,
+.landing-preview-heading h2,
+.landing-preview-balance strong,
+.landing-preview-list-heading strong {
+  color: #f5f5f5;
+}
+
+.landing-preview-status {
+  border-color: rgb(249 115 22 / 20%);
+  background: rgb(249 115 22 / 7%);
+  color: #fdba74;
+}
+
+.landing-preview-avatar {
+  border-color: rgb(249 115 22 / 30%);
+  background: rgb(249 115 22 / 12%);
+  color: #fb923c;
+}
+
+.landing-preview-balance,
+.landing-preview-flow,
+.landing-preview-list {
+  border-color: rgb(255 255 255 / 8%);
+  background: rgb(12 12 12 / 55%);
+}
+
+.landing-preview-flow > div svg {
+  color: #fb923c;
+}
+
+.landing-preview-flow > div:nth-child(2) svg {
+  color: #fdba74;
+}
+
+.landing-preview-module {
+  border-top-color: rgb(255 255 255 / 8%);
+}
+
+.landing-preview-module-icon {
+  background: rgb(249 115 22 / 12%);
+  color: #fb923c;
+}
+
+.landing-preview-module:nth-of-type(3) .landing-preview-module-icon {
+  background: rgb(234 88 12 / 12%);
+  color: #fdba74;
+}
+
+.landing-preview-module-dot {
+  background: #f97316;
+}
+
+/* Section headings */
+.landing-section-heading h2,
+.landing-final-cta h2 {
+  color: #f5f5f5;
+}
+
+.landing-section-heading > p:last-child,
+.landing-final-cta > p:not(.landing-eyebrow) {
+  color: #aaa;
+}
+
+/* Feature cards */
+.landing-feature-card,
+.landing-step-card {
+  border-color: rgb(249 115 22 / 13%);
+  background: linear-gradient(145deg, #242424, #191919);
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.landing-feature-card:hover,
+.landing-step-card:hover {
+  transform: translateY(-5px);
+  border-color: rgb(249 115 22 / 42%);
+  box-shadow: 0 16px 35px rgb(0 0 0 / 25%), 0 0 22px rgb(249 115 22 / 7%);
+}
+
+.landing-feature-icon,
+.landing-benefit-icon,
+.landing-step-icon {
+  border-color: rgb(249 115 22 / 24%);
+  background: rgb(249 115 22 / 11%);
+  color: #fb923c;
+}
+
+/* Unify feature icon accent colors */
+.landing-accent-blue .landing-feature-icon,
+.landing-accent-cyan .landing-feature-icon,
+.landing-accent-pink .landing-feature-icon {
+  border-color: rgb(249 115 22 / 24%);
+  background: rgb(249 115 22 / 11%);
+  color: #fb923c;
+}
+
+.landing-feature-card h3,
+.landing-step-card h3,
+.landing-benefit h3 {
+  color: #f5f5f5;
+}
+
+.landing-feature-card p,
+.landing-step-card p,
+.landing-benefit p {
+  color: #aaa;
+}
+
+.landing-step-number {
+  color: #fb923c;
+}
+
+.landing-step-arrow {
+  color: #f97316;
+}
+
+/* Benefits */
+.landing-benefit {
+  border-color: rgb(249 115 22 / 13%);
+  background: rgb(35 35 35 / 65%);
+}
+
+/* Final call to action */
+.landing-final-cta {
+  border-color: rgb(249 115 22 / 24%);
+  background: linear-gradient(110deg, #24201d, #191919 65%, #211a15);
+  box-shadow: 0 20px 60px rgb(0 0 0 / 22%);
+}
+
+.landing-final-login {
+  color: #fdba74;
+}
+
+.landing-final-login:hover {
+  color: #fff;
+}
+
+/* Footer */
+.landing-footer {
+  border-top-color: rgb(249 115 22 / 14%);
+}
+
+.landing-footer-links a,
+.landing-footer-inner > p {
+  color: #999;
+}
+
+/* Mobile menu and reduced motion compatibility */
+@media (prefers-reduced-motion: reduce) {
+  .landing-hero-glow {
+    animation: none;
+  }
+
+  .landing-feature-card:hover,
+  .landing-step-card:hover,
+  .landing-primary-cta:hover {
+    transform: none;
+  }
+}
+
+html[data-low-power='true'] .landing-hero-glow {
+  animation: none;
+}

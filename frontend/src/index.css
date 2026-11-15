@@ -761,3 +761,253 @@ html[data-low-power='true'] .moving-border::before { transform: none; transition
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================
+   SMARTSPEND - BURNT ORANGE THEME
+   ========================================== */
+
+:root {
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+  --accent: #292524;
+  --accent-foreground: #fdba74;
+  --ring: #fb923c;
+
+  --background: #090909;
+  --foreground: #f5f5f4;
+
+  --card: #171717;
+  --card-foreground: #f5f5f4;
+
+  --popover: #1c1917;
+  --popover-foreground: #f5f5f4;
+
+  --secondary: #292524;
+  --secondary-foreground: #fafaf9;
+
+  --muted: #292524;
+  --muted-foreground: #a8a29e;
+
+  --border: rgb(251 146 60 / 14%);
+  --input: rgb(251 146 60 / 20%);
+
+  --accent-teal: #fb923c;
+
+  --sidebar: #11100f;
+  --sidebar-foreground: #f5f5f4;
+  --sidebar-primary: #f97316;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #292524;
+  --sidebar-accent-foreground: #fdba74;
+  --sidebar-border: rgb(251 146 60 / 12%);
+  --sidebar-ring: #fb923c;
+
+  --glass-fill: rgb(23 23 23 / 82%);
+  --glass-fill-strong: rgb(17 17 17 / 95%);
+  --glass-border: rgb(251 146 60 / 16%);
+
+  --glass-shadow:
+    0 18px 55px rgb(0 0 0 / 40%),
+    inset 0 1px 0 rgb(255 255 255 / 4%);
+}
+
+/* Main background */
+
+body,
+.dark body {
+  background-color: #090909;
+  background-image:
+    radial-gradient(
+      ellipse at 10% 5%,
+      rgb(249 115 22 / 12%),
+      transparent 38%
+    ),
+    radial-gradient(
+      ellipse at 90% 20%,
+      rgb(251 146 60 / 8%),
+      transparent 35%
+    ),
+    linear-gradient(145deg, #11100f, #090909 70%);
+}
+
+/* Sidebar branding */
+
+.sidebar-brand-mark,
+.auth-brand-mark {
+  border-color: rgb(249 115 22 / 40%);
+  background: linear-gradient(
+    145deg,
+    rgb(249 115 22 / 25%),
+    rgb(251 146 60 / 8%)
+  );
+  color: #fb923c;
+  box-shadow: 0 8px 28px rgb(249 115 22 / 16%);
+}
+
+/* Sidebar */
+
+.sidebar-shell {
+  background:
+    radial-gradient(
+      ellipse at 0% 0%,
+      rgb(249 115 22 / 8%),
+      transparent 55%
+    ),
+    #11100f;
+}
+
+/* Glow buttons */
+
+.glow-button {
+  background:
+    linear-gradient(#171717, #171717) padding-box,
+    linear-gradient(
+      115deg,
+      #f97316,
+      #fb923c,
+      #fdba74,
+      #f97316
+    ) border-box;
+  background-size: 100% 100%, 220% 220%;
+}
+
+.glow-button:hover {
+  box-shadow: 0 8px 28px rgb(249 115 22 / 28%);
+}
+
+.glow-button.auth-submit {
+  color: #ffffff;
+  background:
+    linear-gradient(110deg, #ea580c, #f97316, #fb923c) padding-box,
+    linear-gradient(115deg, #f97316, #fdba74, #f97316) border-box;
+  box-shadow: 0 8px 28px rgb(249 115 22 / 20%);
+}
+
+.glow-button.auth-submit:hover {
+  box-shadow: 0 10px 35px rgb(249 115 22 / 35%);
+}
+
+/* Authentication pages */
+
+.auth-page {
+  --background: #090909;
+  --foreground: #f5f5f4;
+  --card: #171717;
+  --card-foreground: #f5f5f4;
+
+  --primary: #f97316;
+  --primary-foreground: #ffffff;
+
+  --muted: #292524;
+  --muted-foreground: #a8a29e;
+
+  --border: rgb(251 146 60 / 15%);
+  --input: rgb(251 146 60 / 20%);
+  --ring: #fb923c;
+
+  --accent-teal: #fb923c;
+
+  --glass-fill: rgb(23 23 23 / 82%);
+  --glass-fill-strong: rgb(17 17 17 / 96%);
+  --glass-border: rgb(251 146 60 / 18%);
+
+  --glass-shadow:
+    0 24px 70px rgb(0 0 0 / 50%),
+    inset 0 1px 0 rgb(255 255 255 / 5%);
+
+  background:
+    radial-gradient(
+      ellipse at 8% 5%,
+      rgb(249 115 22 / 14%),
+      transparent 35%
+    ),
+    radial-gradient(
+      ellipse at 95% 90%,
+      rgb(251 146 60 / 8%),
+      transparent 35%
+    ),
+    #090909;
+}
+
+/* Authentication background glow */
+
+.auth-orb-purple,
+.auth-orb-blue {
+  background: #f97316;
+  opacity: 0.16;
+}
+
+/* Left branding panel */
+
+.auth-story {
+  border-color: rgb(251 146 60 / 18%);
+  background:
+    radial-gradient(
+      ellipse at 85% 10%,
+      rgb(249 115 22 / 13%),
+      transparent 45%
+    ),
+    linear-gradient(145deg, #1c1917, #0c0a09);
+}
+
+/* Brand icon */
+
+.auth-brand-mark {
+  border-color: rgb(249 115 22 / 40%);
+  background: linear-gradient(
+    145deg,
+    rgb(249 115 22 / 25%),
+    rgb(251 146 60 / 8%)
+  );
+  color: #fb923c;
+}
+
+/* Heading gradient */
+
+.auth-gradient-text {
+  background: linear-gradient(
+    105deg,
+    #fdba74 5%,
+    #f97316 55%,
+    #fb923c 95%
+  );
+  background-clip: text;
+  color: transparent;
+}
+
+/* Feature cards */
+
+.auth-capability {
+  border-color: rgb(251 146 60 / 14%);
+  background: rgb(249 115 22 / 4%);
+}
+
+.auth-capability-icon {
+  border-color: rgb(249 115 22 / 25%);
+  background: rgb(249 115 22 / 12%);
+  color: #fb923c;
+}
+
+/* Authentication form card */
+
+.auth-card {
+  border-color: rgb(251 146 60 / 20%);
+  box-shadow:
+    0 28px 90px rgb(0 0 0 / 55%),
+    inset 0 1px 0 rgb(255 255 255 / 5%);
+}
+
+/* Input focus */
+
+.auth-input:focus-visible {
+  border-color: #f97316;
+  box-shadow:
+    0 0 0 3px rgb(249 115 22 / 15%),
+    0 8px 22px rgb(249 115 22 / 10%);
+}
+
+/* Footer */
+
+.auth-card-footer {
+  border-color: rgb(251 146 60 / 15%);
+}
